@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+
+	<head>
+		<title>AI News</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- Oswald Font -->
+		<link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/tooltipster.css') }}" />
+		<!-- home slider-->
+		<link href="{{ url_for('static', filename='css/pgwslider.css') }}" rel="stylesheet">
+		<!-- Font Awesome -->
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+		<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" media="screen">    
+		<link href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet" media="screen">      
+	</head>
+
+	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.0.min.js"></script>	
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.tooltipster.min.js') }}"></script>		
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('.tooltip').tooltipster();
+			});
+		</script>
+		 <script type="text/javascript" src="{{ url_for('static', filename='js/selectnav.min.js') }}"></script>
+		<script type="text/javascript">
+			selectnav('nav', {
+			  label: '-Navigation-',
+			  nested: true,
+			  indent: '-'
+			});
+		</script>		
+		<script src="{{ url_for('static', filename='js/pgwslider.js') }}"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('.pgwSlider').pgwSlider({
+					
+					intervalDuration: 5000
+				
+				});
+			});
+		</script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/placeholder_support_IE.js') }}"></script>
+
+
+	<body>
+	
+		<section id="header_area aligncenter">
+			<div class="wrapper header">
+				<div class="clearfix header_top">
+					<div class="clearfix logo floatleft">
+						<a href=""><h1><span>AI</span> News </h1></a>
+					</div>
+				</div>
+				<div class="header_bottom">
+					<nav>
+						<ul id="nav">
+							<li><a href="{{url_for('index')}}">Home</a></li>
+							<li id="dropdown"><a href="">Clients</a>
+								<ul>
+									<li><a href="{{url_for('dashboard')}}">Dashboard</a></li>
+									<li><a href="">Analyze a Company</a></li>
+									<li><a href="">Market Report</a></li>
+								</ul>
+							</li>
+							<li><a href="{{url_for('contact')}}">Contact us</a></li>
+							<li><a href="{{url_for('login')}}">Sign-Up/Login</a></li>
+							
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</section>
+		
+		<section id="content_area">
+			<div class="clearfix wrapper main_content_area aligncenter">
+
+                <h1>Transactions</h1>
+    
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Portfolio ID</th>
+                            <th>Stock Symbol</th>
+                            <th>Transaction Type</th>
+                            <th>Transaction Date</th>
+                            <th>Amount</th>
+                            <th>Profit/Loss</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction[0] }}</td>
+                                <td>{{ transaction[1] }}</td>
+                                <td>{{ transaction[2] }}</td>
+                                <td>{{ transaction[3] }}</td>
+                                <td>{{ transaction[4] }}</td>
+                                <td>{{ transaction[5] }}</td>
+                                <td>{{ transaction[6] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+
+        </section>
+        <section id="footer_top_area">
+            <div class="clearfix wrapper footer_top">
+                <div class="clearfix single_footer_top floatleft">
+                    <h2>About Us</h2>
+                    <p>AI News is a news aggregator that uses artificial intelligence to analyze news articles and provide a summary of the news. It also provides a sentiment analysis of the news article. </p>
+                </div>
+                <div class="clearfix single_footer_top floatleft">
+                    <h2>Twitter</h2>
+                    <p>Follow us on Twitter <a href="https://twitter.com/ainewscom">here</a>.</p>
+                </div>
+                <div class="clearfix single_footer_top floatleft">
+                    <h2>Contact</h2>
+                    <p>For any questions or comments, please contact us <a href="{{url_for('contact')}}">here</a>.</p>
+                </div>
+            </div>
+        </section>
+        <section id="footer_bottom_area">
+            <div class="clearfix wrapper footer_bottom">
+                <div class="clearfix single_footer_bottom floatleft">
+                    <p>AI News &copy; 2016</p>
+                </div>
+                <div class="clearfix single_footer_bottom floatleft">
+                    <p>Developed by <a href="http://www.alexander-lee.com">Alexander Lee</a></p>
+                </div>
+            </div>
+        </section>
+
+    </body>
+</html>

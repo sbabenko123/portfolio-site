@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+
+	<head>
+		<title>AI News</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- Oswald Font -->
+		<link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/tooltipster.css') }}" />
+		<!-- home slider-->
+		<link href="{{ url_for('static', filename='css/pgwslider.css') }}" rel="stylesheet">
+		<!-- Font Awesome -->
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+		<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" media="screen">    
+		<link href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet" media="screen">      
+	</head>
+
+	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.0.min.js"></script>	
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.tooltipster.min.js') }}"></script>		
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('.tooltip').tooltipster();
+			});
+		</script>
+		 <script type="text/javascript" src="{{ url_for('static', filename='js/selectnav.min.js') }}"></script>
+		<script type="text/javascript">
+			selectnav('nav', {
+			  label: '-Navigation-',
+			  nested: true,
+			  indent: '-'
+			});
+		</script>		
+		<script src="{{ url_for('static', filename='js/pgwslider.js') }}"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('.pgwSlider').pgwSlider({
+					
+					intervalDuration: 5000
+				
+				});
+			});
+		</script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/placeholder_support_IE.js') }}"></script>
+
+
+	<body>
+	
+		<section id="header_area aligncenter">
+			<div class="wrapper header">
+				<div class="clearfix header_top">
+					<div class="clearfix logo floatleft">
+						<a href=""><h1><span>AI</span> News </h1></a>
+					</div>
+				</div>
+				<div class="header_bottom">
+					<nav>
+						<ul id="nav">
+							<li><a href="{{url_for('index')}}">Home</a></li>
+							<li id="dropdown"><a href="">Clients</a>
+								<ul>
+									<li><a href="{{url_for('dashboard')}}">Dashboard</a></li>
+									<li><a href="">Analyze a Company</a></li>
+									<li><a href="">Market Report</a></li>
+								</ul>
+							</li>
+							<li><a href="{{url_for('contact')}}">Contact us</a></li>
+							<li><a href="{{url_for('login')}}">Sign-Up/Login</a></li>
+							
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</section>
+		
+		<section id="content_area">
+			<div class="clearfix wrapper main_content_area aligncenter">
+				
+		
+				<!-- Your Portfolios Section -->
+				<div class="portfolio-list">
+					<h2>Your Portfolios</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Portfolio Name</th>
+								<th>Objective</th>
+								<th>Initial Deposit</th>
+								<th>Cash Balance</th>
+								
+							</tr>
+						</thead>
+						<tbody>
+							{% for portfolio in portfolios %}
+								<tr>
+									<td>{{ portfolio[2] }}</td> 
+									<td>{{ portfolio[3] }}</td> 
+									<td>{{ portfolio[4] }}</td> 
+									<td>{{ portfolio[5] }}</td> 
+									<td>{{ portfolio[6] }}</td> 
+									<td>
+										<form action="/view_portfolio" method="get">
+											<input type="hidden" name="portfolio_id" value="{{ portfolio[0] }}">
+											<button type="submit">View Portfolio</button>
+										</form>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				
+		
+
+
+				<div class="clearfix sidebar_container floatright">
+
+					<!-- Logout Button -->
+					<form action="{{ url_for('logout') }}" method="post">
+						<button type="submit">Logout</button>
+					</form>
+					<div class="clearfix sidebar">
+						<!-- Create a New Portfolio Section -->
+						<div class="clearfix single_sidebar">
+
+							<form action="{{ url_for('add_portfolio') }}" method="post">
+								<div class="sidebar_title"><h2>Create New Portfolio</h2></div>
+								<li>
+								<label for="portfolio_name">Portfolio Name:</label>
+								<input type="text" name="portfolio_name" required>
+								</li>
+								<li>
+								<label for="portfolio_objective">Portfolio Objective:</label>
+								<select name="portfolio_objective" required>
+									<option value="low risk">Low Risk</option>
+									<option value="moderate">Moderate</option>
+									<option value="high growth">High Growth</option>
+								</select>
+								</li>
+								<li>
+								<label for="initial_deposit">Initial Deposit:</label>
+								<input type="number" name="initial_deposit" step="0.01" required>
+								</li>
+								<button type="submit">Create Portfolio</button>
+							</form>
+
+							
+						</div>
+						<div class="clearfix search aligncenter">
+							<div class="sidebar_title"><h2>FIND TRANSACTIONS</h2></div>
+							<form action='/download_transactions_pdf' method="GET">
+								<input type="text" name="start_date" placeholder="Start Date (YYYY-MM-DD)" required/>
+								<input type="text" name="end_date" placeholder="End Date (YYYY-MM-DD)" required/>
+								<input type="hidden" name="user_id" value="{{ user_id }}"/>
+								<button type="submit" name="action" value="search">Search</button>
+								<button type="submit" name="action" value="pdf">Download PDF</button>
+								
+							</form>
+							<!-- <form action="{{ url_for('download_transactions_pdf') }}" method="get">
+								<input type="hidden" name="start_date" value="{{ request.args.get('start_date') }}">
+								<input type="hidden" name="end_date" value="{{ request.args.get('end_date') }}">
+								<button type="submit">Download Transactions PDF</button>
+							</form> -->
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</section>
+
+
+<section id="footer_top_area">
+	<div class="clearfix wrapper footer_top">
+		<div class="clearfix footer_top_container">
+			<div class="clearfix single_footer_top floatleft">
+				<h2>From Twitter</h2>
+				<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. <a href="">Lorem Ipsum has been the industry</a> standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+			</div>
+			<div class="clearfix single_footer_top floatleft">
+				<h2>Recent Post</h2>
+				<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy <a href="">Lorem Ipsum has been the industry</a> text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+			</div>
+			<div class="clearfix single_footer_top floatleft">
+				<h2>Usefull Links</h2>
+				<ul>
+					<li><a href="">Important links of this site</a></li>
+					<li><a href="">Important links of this site</a></li>
+					<li><a href="">Important links of this site</a></li>
+					<li><a href="">Important links of this site</a></li>
+					<li><a href="">Important links of this site</a></li>
+					<li><a href="">Important links of this site</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section id="footer_bottom_area">
+	<div class="clearfix wrapper footer_bottom">
+		<div class="clearfix copyright floatleft">
+			<p> Copyright &copy; All rights reserved by <span>Wpfreeware.com</span></p>
+		</div>
+		<div class="clearfix social floatright">
+			<ul>
+				<li><a class="tooltip" title="Facebook" href=""><i class="fa fa-facebook-square"></i></a></li>
+				<li><a class="tooltip" title="Twitter" href=""><i class="fa fa-twitter-square"></i></a></li>
+				<li><a class="tooltip" title="Google+" href=""><i class="fa fa-google-plus-square"></i></a></li>
+				<li><a class="tooltip" title="LinkedIn" href=""><i class="fa fa-linkedin-square"></i></a></li>
+				<li><a class="tooltip" title="tumblr" href=""><i class="fa fa-tumblr-square"></i></a></li>
+				<li><a class="tooltip" title="Pinterest" href=""><i class="fa fa-pinterest-square"></i></a></li>
+				<li><a class="tooltip" title="RSS Feed" href=""><i class="fa fa-rss-square"></i></a></li>
+				<li><a class="tooltip" title="Sitemap" href=""><i class="fa fa-sitemap"></i> </a></li>
+			</ul>
+		</div>
+	</div>
+</section>	
+</body>
+</html>
+
+		</section>
+	</body>
+
+</html>
