@@ -11,8 +11,27 @@ from decimal import Decimal
 from io import BytesIO
 from reportlab.pdfgen import canvas
 
+
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = secrets.token_hex(16)
+
+# Connect Database
+try:
+    database_config = {
+        "host": "Sofias-MacBook-Pro-3.local",
+        "user": "root",
+        "password": "plokijuh",
+        "database": "ai_news",
+    }
+
+    db = mysql.connector.connect(**database_config)
+
+    # Create a global cursor object if needed
+    cursor = db.cursor()
+except mysql.connector.Error as err:
+    print(f"Error: {err}")
+
+# Metaphor API
 metaphor = Metaphor("eb196ce4-349c-4969-b741-4134c8e58e22")
 
 def metaSearch(query):
@@ -41,13 +60,6 @@ def dashboard():
         # Fetch data for the logged-in user using user_id
         try:
             # Fetch the user's portfolios from the database
-            with mysql.connector.connect(
-                    host="DESKTOP-SDJEFAT",
-                    user="sofia",
-                    password="plokijuh",
-                    database="ai_news"
-            ) as db:
-                cursor = db.cursor()
                 cursor.execute('SELECT * FROM portfolios WHERE user_id = %s', (user_id,))
                 portfolios = cursor.fetchall()
 
@@ -74,27 +86,17 @@ def add_portfolio():
 
     # Insert the new portfolio into the database
     try:
-        with mysql.connector.connect(
-            host="DESKTOP-SDJEFAT",
-            user="sofia",
-            password="plokijuh",
-            database="ai_news"
-        ) as db:
-            cursor = db.cursor()
-            cursor.execute('INSERT INTO portfolios (user_id, portfolio_name, portfolio_objective, initial_deposit, cash_balance) VALUES (%s, %s, %s, %s, %s)',
-                           (get_user_id(), portfolio_name, portfolio_objective, initial_deposit, initial_deposit))
-            
-            db.commit()
+       
+        cursor.execute('INSERT INTO portfolios (user_id, portfolio_name, portfolio_objective, initial_deposit, cash_balance) VALUES (%s, %s, %s, %s, %s)',
+                        (get_user_id(), portfolio_name, portfolio_objective, initial_deposit, initial_deposit))
+        
+        db.commit()
 
         return redirect(url_for('dashboard'))
 
     except IntegrityError as ie:
         # Handle integrity error (if needed)
         return "Error creating the portfolio. Please try again."
-
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-        return "Error creating the portfolio. Please try again later."
     
 
 @app.route('/view_portfolio', methods=['GET', 'POST'])
@@ -110,13 +112,7 @@ def portfolio():
     portfolio_id = session.get('portfolio_id')    
     # Fetch the portfolio from the database
     try:
-        with mysql.connector.connect(
-            host="DESKTOP-SDJEFAT",
-            user="sofia",
-            password="plokijuh",
-            database="ai_news"
-        ) as db:
-            cursor = db.cursor()
+        
             cursor.execute('SELECT * FROM portfolios WHERE id = %s', (portfolio_id,))
             portfolio = cursor.fetchone()
 
@@ -146,13 +142,7 @@ def add_holding():
         total_cost = (-1)*purchase_price*int(num_shares)
 
     try:
-        with mysql.connector.connect(
-            host="DESKTOP-SDJEFAT",
-            user="sofia",
-            password="plokijuh",
-            database="ai_news"
-        ) as db:
-            cursor = db.cursor()
+        
 
             # Assuming you have variables like portfolio_id, stock_symbol, num_shares, purchase_price
             cursor.execute(
@@ -185,13 +175,7 @@ def add_holding():
 @app.route('/get_total_profit_loss/<portfolio_id>', methods=['GET'])
 def get_total_profit_loss(portfolio_id):
     try:
-        with mysql.connector.connect(
-            host="DESKTOP-SDJEFAT",
-            user="sofia",
-            password="plokijuh",
-            database="ai_news"
-        ) as db:
-            cursor = db.cursor()
+        
             cursor.execute('SELECT SUM(profit_loss) FROM holdings WHERE portfolio_id = %s', (portfolio_id,))
             total_profit_loss = cursor.fetchone()[0]
 
@@ -212,13 +196,7 @@ def update_current_price():
 
     # Update the current price in the database
     try:
-        with mysql.connector.connect(
-            host="DESKTOP-SDJEFAT",
-            user="sofia",
-            password="plokijuh",
-            database="ai_news"
-        ) as db:
-            cursor = db.cursor()
+        
 
             # Assuming you have variables like portfolio_id, stock_symbol, num_shares, purchase_price
             cursor.execute('SELECT purchase_price, num_shares FROM holdings WHERE portfolio_id = %s AND stock_symbol = %s', (portfolio_id, stock_symbol))
@@ -259,13 +237,7 @@ def cash_out():
 
     # Delete the holding from the holdings table and add profit_loss to the portfolio cash_balance
     try:
-        with mysql.connector.connect(
-            host="DESKTOP-SDJEFAT",
-            user="sofia",
-            password="plokijuh",
-            database="ai_news"
-        ) as db:
-            cursor = db.cursor()
+        
 
             # Assuming you have variables like portfolio_id, stock_symbol, num_shares, purchase_price
             cursor.execute('SELECT current_price, num_shares, profit_loss FROM holdings WHERE portfolio_id = %s AND stock_symbol = %s', (portfolio_id, stock_symbol))
@@ -321,13 +293,7 @@ def buy_sell():
         total_cost = (-1)*purchase_price*int(num_shares)
 
     try:
-        with mysql.connector.connect(
-            host="DESKTOP-SDJEFAT",
-            user="sofia",
-            password="plokijuh",
-            database="ai_news"
-        ) as db:
-            cursor = db.cursor()
+        
 
             cursor.execute(
                 'INSERT INTO transactions (portfolio_id, stock_symbol, transaction_type, transaction_date, amount, profit_loss) VALUES (%s, %s, %s, %s, %s, %s)',
@@ -380,13 +346,7 @@ def download_transactions_pdf():
 
     # Fetch the transactions from the database for the logged-in user
     try:
-        with mysql.connector.connect(
-                host="DESKTOP-SDJEFAT",
-                user="sofia",
-                password="plokijuh",
-                database="ai_news"
-        ) as db:
-            cursor = db.cursor()
+        
 
             # Assuming you have a user_id stored in the session
             user_id = session.get('user_id')
@@ -443,13 +403,7 @@ def total_profit_loss():
 
     # Fetch the transactions from the database for the logged-in user
     try:
-        with mysql.connector.connect(
-                host="DESKTOP-SDJEFAT",
-                user="sofia",
-                password="plokijuh",
-                database="ai_news"
-        ) as db:
-            cursor = db.cursor()
+        
 
             # Assuming you have a user_id stored in the session
             user_id = session.get('user_id')
@@ -480,13 +434,7 @@ def search_transactions():
 
     # Fetch the transactions from the database for the logged-in user
     try:
-        with mysql.connector.connect(
-                host="DESKTOP-SDJEFAT",
-                user="sofia",
-                password="plokijuh",
-                database="ai_news"
-        ) as db:
-            cursor = db.cursor()
+       
 
             # Assuming you have a user_id stored in the session
             user_id = session.get('user_id')
@@ -527,13 +475,7 @@ def process_login():
     password = request.form.get('password')
     
     try:
-        with mysql.connector.connect(
-            host="DESKTOP-SDJEFAT",
-            user="sofia",
-            password="plokijuh",
-            database="ai_news"
-        ) as db:
-            cursor = db.cursor()
+        
             cursor.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
             user = cursor.fetchone()
             
@@ -568,21 +510,15 @@ def process_form():
     if password!=confirm_password: return "Passwords must match."
     
     try:
-        with mysql.connector.connect(
-            host="DESKTOP-SDJEFAT",
-            user="sofia",
-            password="plokijuh",
-            database="ai_news"
-        ) as db:
-            cursor = db.cursor()
-            cursor.execute('INSERT INTO users (first_name, last_name, username, email, password) VALUES (%s, %s, %s, %s, %s)',
-                           (first_name, last_name, username, email, password))
-            
-            db.commit()
-            
+        
+        cursor.execute('INSERT INTO users (first_name, last_name, username, email, password) VALUES (%s, %s, %s, %s, %s)',
+                        (first_name, last_name, username, email, password))
+        
+        db.commit()
+        
         # Fetch the ID of the newly created user
-            cursor.execute('SELECT LAST_INSERT_ID()')
-            user_id = cursor.fetchone()[0]
+        cursor.execute('SELECT LAST_INSERT_ID()')
+        user_id = cursor.fetchone()[0]
 
         # Redirect to the dashboard page for the newly created user
         return redirect(url_for('dashboard', user_id=user_id))
